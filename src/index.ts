@@ -36,23 +36,22 @@ export class OnTheMinute {
    * Starts the timer, aligning with the clock
    */
   public start(): void {
-    // Stop any existing timer
-    if (this.timerId !== null) {
-      clearTimeout(this.timerId);
-      this.timerId = null;
-    }
+    this.stop();
+    this.scheduleNextTick();
+  }
 
-    const millisecondsRemaining = this.millisecondsUntilNextMinute();
-
-    // Set initial timeout to align with the next minute
+  /**
+   * Schedules the next execution of callbacks precisely at the start of the next minute.
+   *
+   * After executing the callbacks, it reschedules itself based on the current clock time
+   * to ensure consistent, drift-free minute alignment.
+   */
+  private scheduleNextTick(): void {
+    const msUntilNextMinute = this.millisecondsUntilNextMinute();
     this.timerId = setTimeout(() => {
       this.executeCallbacks();
-
-      // Now set interval for exactly one minute
-      this.timerId = setInterval(() => {
-        this.executeCallbacks();
-      }, 60 * 1000);
-    }, millisecondsRemaining);
+      this.scheduleNextTick();
+    }, msUntilNextMinute);
   }
 
   /**
@@ -89,7 +88,6 @@ export class OnTheMinute {
   public stop(): void {
     if (this.timerId !== null) {
       clearTimeout(this.timerId);
-      clearInterval(this.timerId);
       this.timerId = null;
     }
   }
