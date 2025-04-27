@@ -6,7 +6,3 @@ Register a callback to execute every minute on the minute.
 const scheduler = new OnTheMinute();
 scheduler.registerCallback(() => console.log(new Date().toString()));
 ```
-
-## TODO:
-
-handle drift
